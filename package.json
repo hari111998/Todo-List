@@ -1,0 +1,23 @@
+{
+  "name": "todo-list",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hari111998/Todo-List.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hari111998/Todo-List/issues"
+  },
+  "homepage": "https://github.com/hari111998/Todo-List#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "sequelize": "^5.21.6"
+  }
+}
