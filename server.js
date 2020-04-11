@@ -19,3 +19,4 @@ db.sync()
   .catch((err) => {
     console.error(err)
   })
+

@@ -25,7 +25,7 @@ const Todos = db.define('todo', {
     status:{
         type: Sequelize.BOOLEAN,
         allowNull: false,
-        defaultValue: false
+        defaultValue: "Incomplete"
     },
     priority: {
         type: Sequelize.STRING,
@@ -37,11 +37,12 @@ const Notes = db.define("notes",{
     id : {
         type: Sequelize.INTEGER,
         primaryKey: true,
+        autoIncrement:true
     },
     todoId: {
         type: Sequelize.INTEGER,
         allowNull:false
-    },
+        },
     value: {
         type: Sequelize.STRING(300),
         allowNull: false
