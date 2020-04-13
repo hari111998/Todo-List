@@ -22,27 +22,26 @@ const Todos = db.define('todo', {
     dueDate: {
         type: Sequelize.DATE
     },
-    status:{
-        type: Sequelize.BOOLEAN,
-        allowNull: false,
+    status: {
+        type: Sequelize.STRING,
         defaultValue: "Incomplete"
     },
     priority: {
         type: Sequelize.STRING,
-        defaultValue: "Low"
+        defaultValue: "Medium"
     }
 })
 
-const Notes = db.define("notes",{
-    id : {
+const Notes = db.define("notes", {
+    id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
-        autoIncrement:true
+        autoIncrement: true
     },
     todoId: {
         type: Sequelize.INTEGER,
-        allowNull:false
-        },
+        allowNull: false
+    },
     value: {
         type: Sequelize.STRING(300),
         allowNull: false
@@ -50,5 +49,7 @@ const Notes = db.define("notes",{
 })
 
 module.exports = {
-    db, Todos , Notes
+    db,
+    Todos,
+    Notes
 }
