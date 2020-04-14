@@ -134,15 +134,17 @@ route.post('/:id/notes', async(req, res) => {
             error: 'todo id must be an integer',
         })
     }
-    if (typeof req.body.value !== 'string' && req.body.value.length > 0) {
-        return res.status(400).send({ error: 'Value not provided' })
+    console.log("Reached 137")
+    if (typeof req.body.note !== 'string' && req.body.note.length > 0) {
+        return res.status(400).send({ error: 'note not provided' })
     }
     const note = await Notes.create({
         todoId: req.params.id,
-        value: req.body.value
+        value: req.body.note
     })
+    console.log("Reached 137")
 
-    res.status(201).send({ success: 'New note added', data: note })
+    res.status(201).send({ success: 'New note added'})
 
 })
 

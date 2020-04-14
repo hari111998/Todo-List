@@ -12,12 +12,15 @@ window.onload = async function() {
 var id
 
 function GetAllTodos(element) {
+
     var list = document.getElementById("taskList")
     var description = document.createElement("td")
     description.textContent = element.description
 
     var dueDate = document.createElement("td")
-    dueDate.textContent = element.dueDate.split('T')[0]
+    if(element.dueDate!=null){
+        dueDate.textContent = element.dueDate.split('T')[0]
+    }
 
     var title = document.createElement("th")
     title.scope = "row"
@@ -37,6 +40,9 @@ function GetAllTodos(element) {
 
     var addNote = document.createElement("span")
     addNote.className = "fas fa-plus"
+    addNote.addEventListener("click", function() {
+        AddNote(element.id)
+    })
     var viewNotes = document.createElement("span")
     viewNotes.className = "fas fa-sticky-note"
 
@@ -109,6 +115,7 @@ async function AddNewItem() {
         body: JSON.stringify({ title: title, description: description, dueDate: duedate, status: status, priority: priority })
     })
     const todos = await resp.json()
+    ShowDiv("addTaskDiv")
     GetAllTodos(todos.data)
 
 }
@@ -137,10 +144,36 @@ function EditElement(element) {
     ShowDiv('editTaskDiv');
     document.getElementById("edittaskTitle").value = element.title
     document.getElementById("edittaskDescription").value = element.description
-    document.getElementById("edittaskDueDate").value = element.dueDate.split('T')[0]
+    if(element.dueDate!=null){
+        document.getElementById("edittaskDueDate").value = element.dueDate.split('T')[0]
+    }
     document.getElementById("edittaskStatus").value = element.status.toString()
     document.getElementById("edittaskPriority").value = element.priority
     id = element.id
+}
+function AddNote(elementId) {
+    ShowDiv('addNoteTaskDiv');
+    id = elementId
+}
+
+async function AddNoteTask(){
+    var noteValue = document.getElementById("noteTask").value
+    console.log(noteValue)
+    var url = '/todos/'+id+'/notes'
+    console.log(url)
+    const resp = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ note:noteValue })
+    })
+    const note = await resp.json()
+
+    if(note.success=="New note added"){
+        alert("Note Added Successfully")
+    }
+    ShowDiv("addNoteTaskDiv")
 }
 
 
@@ -148,3 +181,40 @@ function SortSatus() {
     var todos = document.getElementById("taskList");
     todos.sort((a, b) => (a.status > b.status) ? 1 : -1)
 }
+
+
+
+function sortTable(column) {
+    var table, rows, switching, i, x, y, shouldSwitch;
+    table = document.getElementById("list");
+    switching = true;
+    /* Make a loop that will continue until
+    no switching has been done: */
+    while (switching) {
+      // Start by saying: no switching is done:
+      switching = false;
+      rows = table.rows;
+      /* Loop through all table rows (except the
+      first, which contains table headers): */
+      for (i = 1; i < (rows.length - 1); i++) {
+        // Start by saying there should be no switching:
+        shouldSwitch = false;
+        /* Get the two elements you want to compare,
+        one from current row and one from the next: */
+        x = rows[i].getElementsByTagName("TD")[column];
+        y = rows[i + 1].getElementsByTagName("TD")[column];
+        // Check if the two rows should switch place:
+        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+          // If so, mark as a switch and break the loop:
+          shouldSwitch = true;
+          break;
+        }
+      }
+      if (shouldSwitch) {
+        /* If a switch has been marked, make the switch
+        and mark that a switch has been done: */
+        rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+        switching = true;
+      }
+    }
+  }
