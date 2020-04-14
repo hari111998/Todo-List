@@ -10,7 +10,7 @@ window.onload = async function() {
     });
 }
 var id
-
+var noteNum
 function GetAllTodos(element) {
 
     var list = document.getElementById("taskList")
@@ -45,7 +45,9 @@ function GetAllTodos(element) {
     })
     var viewNotes = document.createElement("span")
     viewNotes.className = "fas fa-sticky-note"
-
+    viewNotes.addEventListener("click", function() {
+        GetAllNotes(element.id)
+    })
     var action = document.createElement("td")
     action.appendChild(edit)
     action.appendChild(addNote)
@@ -87,6 +89,7 @@ function ShowDiv(div) {
         document.getElementById("taskList").style.pointerEvents = "none";
         document.getElementById("nav").style.opacity = "20%";
         document.getElementById("nav").style.pointerEvents = "none";
+        window.scrollTo(top)
         return
     }
     if (addDiv) {
@@ -107,6 +110,11 @@ async function AddNewItem() {
     var duedate = document.getElementById("taskDueDate").value;
     var status = document.getElementById("taskSatus").value;
     var priority = document.getElementById("taskPriority").value;
+    document.getElementById("taskTitle").value = ""
+    document.getElementById("taskDescription").value = ""
+    document.getElementById("taskDueDate").value = ""
+    document.getElementById("taskSatus").value = "Incomplete"
+    document.getElementById("taskPriority").value = "Medium"
     const resp = await fetch('/todos', {
         method: 'POST',
         headers: {
@@ -158,7 +166,7 @@ function AddNote(elementId) {
 
 async function AddNoteTask(){
     var noteValue = document.getElementById("noteTask").value
-    console.log(noteValue)
+    document.getElementById("noteTask").value = ""
     var url = '/todos/'+id+'/notes'
     console.log(url)
     const resp = await fetch(url, {
@@ -177,44 +185,75 @@ async function AddNoteTask(){
 }
 
 
-function SortSatus() {
-    var todos = document.getElementById("taskList");
-    todos.sort((a, b) => (a.status > b.status) ? 1 : -1)
-}
-
-
-
 function sortTable(column) {
     var table, rows, switching, i, x, y, shouldSwitch;
     table = document.getElementById("list");
     switching = true;
-    /* Make a loop that will continue until
-    no switching has been done: */
+    
     while (switching) {
-      // Start by saying: no switching is done:
       switching = false;
       rows = table.rows;
-      /* Loop through all table rows (except the
-      first, which contains table headers): */
+
       for (i = 1; i < (rows.length - 1); i++) {
-        // Start by saying there should be no switching:
         shouldSwitch = false;
-        /* Get the two elements you want to compare,
-        one from current row and one from the next: */
         x = rows[i].getElementsByTagName("TD")[column];
         y = rows[i + 1].getElementsByTagName("TD")[column];
-        // Check if the two rows should switch place:
         if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
-          // If so, mark as a switch and break the loop:
           shouldSwitch = true;
           break;
         }
       }
       if (shouldSwitch) {
-        /* If a switch has been marked, make the switch
-        and mark that a switch has been done: */
         rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
         switching = true;
       }
     }
   }
+
+
+  async function GetAllNotes(id){
+    const resp = await fetch('/todos/'+id+'/notes', { method: 'GET' })
+    const notes = await resp.json()
+    if (notes.length == 0) {
+        alert("No Notes found")
+        return
+    }
+    ShowDiv('viewNoteTaskDiv')
+    noteNum=1
+    document.getElementById("notesBody").innerHTML = ""
+    notes.forEach(element => {
+        ViewNote(element,noteNum)
+        noteNum+=1
+    });
+
+  }
+
+function ViewNote(note, num){
+    var title = document.createElement("strong")
+    title.className = "mr-auto"
+    title.textContent = "Note "+num
+    
+    var date = document.createElement('small')
+    date.textContent ="Created at : "+note.createdAt.split('T')[1].split('.')[0]+' on '+note.createdAt.split('T')[0]
+
+    var header = document.createElement('div')
+    header.className = "toast-header"
+
+    header.appendChild(title)
+    header.appendChild(date)
+
+    var body = document.createElement('div')
+    body.className = 'toast-body'
+    body.textContent = note.value
+    body.style.height = "100px"
+    body.style.overflowY = "scroll"
+
+    var toast = document.createElement('div')
+    toast.className = "toast show"
+    
+    toast.appendChild(header)
+    toast.appendChild(body)
+    toast.style.height="100px"
+    toast.style.width = "100%"
+    document.getElementById("notesBody").appendChild(toast)
+}
